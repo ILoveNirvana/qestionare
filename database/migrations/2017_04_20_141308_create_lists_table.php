@@ -17,7 +17,6 @@ class CreateListsTable extends Migration
             $table->increments('id');
             $table->string('name');
             $table->json('questions');
-            $table->timestamps();
         });
     }
 

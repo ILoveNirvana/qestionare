@@ -18,7 +18,6 @@ class CreateQuestionsTable extends Migration
             $table->string('question');
             $table->json('answers');
             $table->json('right_answer');
-            $table->timestamps();
         });
     }
 
