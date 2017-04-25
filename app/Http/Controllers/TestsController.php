@@ -91,7 +91,7 @@ class TestsController extends Controller
      * @return Response
      */
     public function check( $id, Request $request ) {
-        $data = $request->input()['data'];
+        $data = $request->input();
         $test = DB::table('lists')->where('id', $id)->get();
         $questions = json_decode($test[0]->questions);
         for ($i=0; $i < sizeof($questions->data); $i++) { 
