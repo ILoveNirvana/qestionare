@@ -19,7 +19,10 @@
         <script type="text/javascript" src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.98.2/js/materialize.min.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/4.2.0/papaparse.min.js"></script>
-        <script src ="https://unpkg.com/vue"></script>
+        <?php
+            if( env('APP_ENV') == 'production' ) { echo  '<script src ="https://unpkg.com/vue@2.2.6/dist/vue.min.js"></script>'; }
+            else { echo  '<script src ="https://unpkg.com/vue"></script>'; }
+        ?>
         <script src="https://unpkg.com/vue-router/dist/vue-router.js"></script>
 
         <script>
