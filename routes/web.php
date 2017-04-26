@@ -12,12 +12,8 @@
 */
 
 Route::get('/', function () {
-	return view('index');
+	return view('app');
 });
-
-Route::get('/question/{id}', 'QuestionController@get');
-
-Route::post('/question/check/{id}', 'QuestionController@check');
 
 
 // TESTS API Going there
@@ -25,6 +21,8 @@ Route::post('/question/check/{id}', 'QuestionController@check');
 Route::get('tests/', 'TestsController@getAll');
 
 Route::get('test/{id}', 'TestsController@get');
+
+Route::options('/seacrh/tests/{query}', 'TestsController@seacrhingTests');
 
 
 Route::put('test/', 'TestsController@add');

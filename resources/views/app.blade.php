@@ -4,7 +4,6 @@
         <meta charset="utf-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <meta name="viewport" content="width=device-width, initial-scale=1">
-        <meta name="csrf-token" content="<?php echo csrf_token() ?>">
         
         <title>Questionare</title>
 
@@ -13,27 +12,28 @@
     </head>
     <body>
         
-        <div id="root" class="container">
+        <div id="app" class="container">
             <router-view></router-view>
         </div>
+
         <script type="text/javascript" src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.98.2/js/materialize.min.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/4.2.0/papaparse.min.js"></script>
-        <?php
-            if( env('APP_ENV') == 'production' ) { echo  '<script src ="https://unpkg.com/vue@2.2.6/dist/vue.min.js"></script>'; }
-            else { echo  '<script src ="https://unpkg.com/vue"></script>'; }
-        ?>
+        <script src ="https://unpkg.com/vue"></script>
         <script src="https://unpkg.com/vue-router/dist/vue-router.js"></script>
 
         <script>
-            var token = document.querySelector('meta[name="csrf-token"]').content;
+            window.Laravel = {
+                token: '{{ csrf_token() }}'
+            }
         </script>
-        
+        @verbatim
         <script>
             const TestTable = Vue.component('tests-table', {
                 data: function() {
                     return {
-                        tests: null
+                        tests: null,
+                        query: null
                     }
                 },
                 created: function() {
@@ -48,23 +48,39 @@
                             self.tests = JSON.parse(xhr.responseText)
                         }
                         xhr.send()
+                    },
+                    searchTests: function () {
+                        var xhr = new XMLHttpRequest()
+                        var self = this
+                        if(self.query.length > 0) {
+                            xhr.open('OPTIONS', './seacrh/tests/' + self.query)
+                            xhr.onload = function() {
+                                self.tests = JSON.parse(xhr.responseText)
+                            }
+                            xhr.send()
+                        }
+                        else { self.getAllTests() }
                     }
                 },
                 template: `
                                 <div class="row">
                                     <table class="bordered centered col s6 offset-s3">
                                         <caption>List of Tests</caption>
+                                        
                                         <thead>
                                             <tr>
                                                 <th>Test</th>
                                                 <th>Actions</th>
+                                            </tr>
+                                            <tr>
+                                                <td colspan="2"><router-link class="btn-floating btn-large waves-effect waves-light green" to="/add-new"><i class="material-icons">add</i></router-link></td>
+                                                <td><input type="search" placeholder="Search test" v-on:change="searchTests" v-model="query"></td>
                                             </tr>
                                         </thead>
                                         <tbody>
                                             <template v-for="test in tests">
                                                 <test-field :test="test"></test-field>
                                             </template>
-                                            <tr><td colspan="2"><router-link class="btn-floating btn-large waves-effect waves-light green" to="/add-new"><i class="material-icons">add</i></router-link></td></tr>
                                         </tbody>
                                     </table>
                                 </div>`
@@ -76,7 +92,7 @@
                         var xhr = new XMLHttpRequest()
                         var self = this
                         xhr.open('DELETE', './test/' + self.test.id)
-                        xhr.setRequestHeader('X-CSRF-TOKEN', token)
+                        xhr.setRequestHeader('X-CSRF-TOKEN', Laravel.token)
                         xhr.onload = function() {
                             self.$parent.getAllTests()
                         }
@@ -104,7 +120,7 @@
                         var xhr = new XMLHttpRequest()
                         var self = this
                         xhr.open('PUT', 'test')
-                        xhr.setRequestHeader('X-CSRF-TOKEN', token)
+                        xhr.setRequestHeader('X-CSRF-TOKEN', Laravel.token)
                         xhr.setRequestHeader("Content-Type", "application/json")
                         xhr.onload = function () {
                             router.push('/')
@@ -244,7 +260,7 @@
                         var xhr = new XMLHttpRequest()
                         var self = this
                         xhr.open('PATCH', './test/' + this.id + '/check')
-                        xhr.setRequestHeader('X-CSRF-TOKEN', token)
+                        xhr.setRequestHeader('X-CSRF-TOKEN', Laravel.token)
                         xhr.setRequestHeader("Content-Type", "application/json")
                         xhr.onload = function() {
                             self.data = (JSON.parse(xhr.responseText))
@@ -303,9 +319,10 @@
         </script>
 
         <script>
-            var root = new Vue({
+            var app = new Vue({
                 router
-            }).$mount('#root')
+            }).$mount('#app')
         </script>
+        @endverbatim
     </body>
 </html>

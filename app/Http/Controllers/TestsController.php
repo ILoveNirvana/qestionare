@@ -10,6 +10,26 @@ use Illuminate\Support\Facades\DB;
 class TestsController extends Controller
 {
     /**
+     * Show list of tests finded by query.
+     *
+     * @return Response
+     */
+    public function seacrhingTests($query)
+    {
+        $data = DB::table('lists')
+            ->where('name', 'like', $query . '%')
+            ->get();
+        $result = array();
+
+        for ($i = 0; $i < sizeof($data); $i++) { 
+            array_push($result, [ "id" => $data[$i]->id, "name" => $data[$i]->name ]);
+        }
+
+        return $result;
+
+    }    
+
+    /**
      * Show list of tests.
      *
      * @return Response
