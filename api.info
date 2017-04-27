@@ -48,11 +48,13 @@ PATCH: test/check/
 Request:
 	[{
 		id: Number,
-		answers: [
-			[
-				Number
-			]
-		]
+		answers: [{
+			id: Number,
+			data:
+				[
+					Number
+				]
+		}]
 	}]
 Response:
 	[{

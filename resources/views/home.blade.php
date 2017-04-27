@@ -225,11 +225,15 @@
                                     answer.push(i + 1);
                                 }
                             }
-                            this.answers.push(answer.length != 0 ? answer : [0]);
-                            this.currentQuestion++;
+                            this.answers.push({
+                                id: this.data.questions[this.currentQuestion].id,
+                                data: answer.length != 0 ? answer : [0]
+                            })
+                            this.currentQuestion++
                             document.getElementById('form').reset();
                         }
-                    }
+                    },
+                    randomOrder: () => Math.floor(Math.random() * 100)
                 },
                 template: `    <div class="row" v-if="data">
                                     <div class="col s12 m6 offset-m3" v-if="data.questions[currentQuestion]">
@@ -238,11 +242,13 @@
                                             <h1 class="card-title">{{ data.name }}</h1>
                                             <hr>
                                             <span>{{ data.questions[currentQuestion].question }}</span>
-                                            <form action="#" id="form">
-                                            <p v-for="(answer, id) in data.questions[currentQuestion].answers" v-if="answer">
-                                                <input type="checkbox" :id="'answ' + id" />
-                                                <label :for="'answ' + id" :id="'answer' + id">{{ answer }}</label>
-                                            </p>
+                                            <form action="#" id="form" style="display: flex; flex-direction: column">
+                                            <template v-for="(answer, id) in data.questions[currentQuestion].answers" v-if="answer">
+                                                <p  :style="'order: ' + randomOrder()">
+                                                    <input type="checkbox" :id="'answ' + id" />
+                                                    <label :for="'answ' + id" :id="'answer' + id">{{ answer }}</label>
+                                                </p>
+                                            </template>
                                             </form>
                                         </div>
                                         <div class="card-action">
