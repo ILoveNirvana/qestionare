@@ -1,9 +1,9 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace Questionare\Http\Controllers;
 
-use App\User;
-use App\Http\Controllers\Controller;
+use Questionare\User;
+use Questionare\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 

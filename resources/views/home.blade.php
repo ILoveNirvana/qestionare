@@ -1,27 +1,14 @@
-<!DOCTYPE html>
-<html>
-    <head>
-        <meta charset="utf-8">
-        <meta http-equiv="X-UA-Compatible" content="IE=edge">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
-        
-        <title>Questionare</title>
+@extends('layouts.app')
 
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.98.2/css/materialize.min.css">
-        <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-    </head>
-    <body>
-        
+@section('content')
+    @if (Auth::guest())
+    <script>
+        window.location = "{{ route('login') }}"
+    </script>
+    @endif
         <div id="root" class="container">
             <router-view></router-view>
         </div>
-
-        <script type="text/javascript" src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.98.2/js/materialize.min.js"></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/4.2.0/papaparse.min.js"></script>
-        <script src ="https://unpkg.com/vue"></script>
-        <script src="https://unpkg.com/vue-router/dist/vue-router.js"></script>
-        <script src="https://unpkg.com/vuex@2.3.1"></script>
 
         <script>
             const store = new Vuex.Store({
@@ -347,5 +334,4 @@
             }).$mount('#root')
         </script>
         @endverbatim
-    </body>
-</html>
+@endsection

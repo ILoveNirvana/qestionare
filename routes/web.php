@@ -12,7 +12,7 @@
 */
 
 Route::get('/', function () {
-	return view('app');
+	return view('home');
 });
 
 
@@ -22,7 +22,10 @@ Route::get('tests/', 'TestsController@getAll');
 
 Route::get('test/{id}', 'TestsController@get');
 
-Route::options('/seacrh/tests/{query}', 'TestsController@seacrhingTests');
+Route::get('/seacrh/tests/{query}', 'TestsController@seacrhingTests');
+
+
+Route::patch('test/check/', 'TestsController@check');
 
 
 Route::put('test/', 'TestsController@add');
@@ -30,4 +33,8 @@ Route::put('test/', 'TestsController@add');
 
 Route::delete('test/{id}', 'TestsController@remove');
 
-Route::patch('test/{id}/check', 'TestsController@check');
+
+
+Auth::routes();
+
+Route::get('/home', 'HomeController@index');

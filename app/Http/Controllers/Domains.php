@@ -1,6 +1,6 @@
-<?php namespace App\Http\Controllers;
+<?php namespace Questionare\Http\Controllers;
 
-use App\Http\Controllers\Controller;
+use Questionare\Http\Controllers\Controller;
 
 class DomainsController extends Controller {
 

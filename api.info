@@ -1,0 +1,99 @@
+<---------------------------------------->
+
+GET: /tests/
+Request:
+	null
+Response:
+	[{
+		id: Number, - ID of test.
+		name: String - Name of test.
+	}]
+
+<---------------------------------------->
+
+GET: /test/{id}/
+Request:
+	[{
+		id: Number - ID of test.
+	}]
+Response:
+	[{
+		id: Number, - ID of test.
+		name: String, - Name of test.
+		questions: [{ - Array of objects
+			id: Number,
+			question: String,
+			answers: [
+				String
+				]
+			}]
+	}]
+
+<---------------------------------------->
+
+GET: /seacrh/tests/{query}/
+Request:
+	[{
+		query: String
+	}]
+Response:
+	[{
+		id: Number,
+		name: String
+	}]
+
+<---------------------------------------->
+
+PATCH: test/check/
+Request:
+	[{
+		id: Number,
+		answers: [
+			[
+				Number
+			]
+		]
+	}]
+Response:
+	[{
+		id: Number,
+		name: String,
+		results: [{
+			id: Number,
+			question: String,
+			correct: Bool
+		}]
+	}]
+
+<---------------------------------------->
+
+PUT: test/
+Request:
+	[{
+		name: String,
+		questions: [{
+			question: String,
+			answers: [
+				String
+			],
+			right_answer: [
+				Number
+			]
+		}]
+	}]
+Response:
+	[{
+		id: Number
+	}]
+
+<---------------------------------------->
+
+DELETE: test/{id}/
+Request:
+	[{
+		id: Number
+	}]
+Response:
+	null
+
+<---------------------------------------->

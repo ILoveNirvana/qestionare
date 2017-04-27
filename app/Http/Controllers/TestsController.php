@@ -1,11 +1,12 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace Questionare\Http\Controllers;
 
-use App\User;
-use App\Http\Controllers\Controller;
+use Questionare\User;
+use Questionare\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
 
 class TestsController extends Controller
 {
@@ -57,15 +58,15 @@ class TestsController extends Controller
         $test = DB::table('lists')->where('id', $id)->get();
         $questions = json_decode($test[0]->questions);
 
-        for ($i=0; $i < sizeof($questions->data); $i++) { 
-            $questions->data[$i] = [
-                "id" => DB::table('questions')->where('id', $questions->data[$i])->value('id'),
-                "question" => DB::table('questions')->where('id', $questions->data[$i])->value('question'),
-                "answers" => json_decode(DB::table('questions')->where('id', $questions->data[$i])->value('answers'))->data
+        for ($i=0; $i < sizeof($questions); $i++) { 
+            $questions[$i] = [
+                "id" => DB::table('questions')->where('id', $questions[$i])->value('id'),
+                "question" => DB::table('questions')->where('id', $questions[$i])->value('question'),
+                "answers" => json_decode(DB::table('questions')->where('id', $questions[$i])->value('answers'))
             ];
         }
-        $test[0]->questions = $questions->data;
-        return response()->json(json_encode($test[0]));
+        $test[0]->questions = $questions;
+        return json_encode($test[0]);
     }
 
     /**
@@ -74,19 +75,22 @@ class TestsController extends Controller
      * @return Response
      */
     public function add( Request $request ) {
+        if(Auth::id() != 1) return 'You don`t have permissions!';
         $data = $request->input();
-        $questions_ids = array();
-        for ($i=0; $i < sizeof($data['questions']); $i++) { 
-            $answers = array("data" => $data['answers'][$i]['data']);
-            $right_answers = array("data" => $data['right_answers'][$i]['data']);
-            array_push($questions_ids, DB::table('questions')->insertGetId(
-                ['question' => $data['questions'][$i][0],
-                 'answers' => json_encode($answers),
-                 'right_answer' => json_encode($right_answers),
-                ]
-            ));
+        $questions = [];
+        foreach ($data['questions'] as $question) {
+            $id = DB::table('questions')->insertGetId([
+                    'question' => $question['question'],
+                    'answers' => $question['answers'],
+                    'right_answer' => $question['right_answer']
+                ]);
+            array_push($questions, $id);
         }
-        DB::table('lists')->insert(['name' => $data['name'], 'questions' => '{"data": ['. implode(',', $questions_ids) .']}']);
+        $newTestId = DB::table('lists')->insertGetId([
+            'name' => $data['name'],
+            'questions' => json_encode($questions)
+            ]);
+        return json_encode(array( 'id' => $newTestId ));
     }
 
     /**
@@ -94,12 +98,13 @@ class TestsController extends Controller
      *
      * @return Response
      */
-    public function remove( $id ) {
+    public function remove( $id ) {        
+        if(Auth::id() != 1) return 'You don`t have permissions!';
         $test = DB::table('lists')->where('id', $id)->get();
         $questions = json_decode($test[0]->questions);
 
-        for ($i=0; $i < sizeof($questions->data); $i++) { 
-            DB::table('questions')->where('id', $questions->data[$i])->delete();
+        for ($i=0; $i < sizeof($questions); $i++) { 
+            DB::table('questions')->where('id', $questions[$i])->delete();
         }
 
         DB::table('lists')->where('id', $id)->delete();
@@ -110,25 +115,27 @@ class TestsController extends Controller
      *
      * @return Response
      */
-    public function check( $id, Request $request ) {
-        $data = $request->input();
+    public function check( Request $request ) {       
+        $data = json_decode($request->input()['answers']);
+        $id = $request->input()['id'];
         $test = DB::table('lists')->where('id', $id)->get();
         $questions = json_decode($test[0]->questions);
-        for ($i=0; $i < sizeof($questions->data); $i++) { 
-            $questions->data[$i] = [
-                "id" => DB::table('questions')->where('id', $questions->data[$i])->value('id'),
-                "question" => DB::table('questions')->where('id', $questions->data[$i])->value('question'),
-                "answers" => json_decode(DB::table('questions')->where('id', $questions->data[$i])->value('answers'))->data,
-                "right_answer" => json_decode(DB::table('questions')->where('id', $questions->data[$i])->value('right_answer'))->data
+        for ($i=0; $i < sizeof($questions); $i++) { 
+            $questions[$i] = [
+                "id" => DB::table('questions')->where('id', $questions[$i])->value('id'),
+                "question" => DB::table('questions')->where('id', $questions[$i])->value('question'),
+                "answers" => json_decode(DB::table('questions')->where('id', $questions[$i])->value('answers')),
+                "right_answer" => json_decode(DB::table('questions')->where('id', $questions[$i])->value('right_answer'))
             ];
         }
 
 
-        $response = array('name' => $test[0]->name, 'results' => []);
+        $response = array('id' => $test[0]->id, 'name' => $test[0]->name, 'results' => []);
         for ($i=0; $i < sizeof($data); $i++) { 
-            $correct = $data[$i] == $questions->data[$i]['right_answer'];
+            $correct = $data[$i] == $questions[$i]['right_answer'];
             $result = [
-                'question' =>  $questions->data[$i]['question'],
+                'id' => $questions[$i]['id'],
+                'question' =>  $questions[$i]['question'],
                 'correct' => $correct
             ];
             array_push($response["results"], $result);

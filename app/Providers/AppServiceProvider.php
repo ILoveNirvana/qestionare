@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Providers;
+namespace Questionare\Providers;
 
 use Illuminate\Support\ServiceProvider;
 
