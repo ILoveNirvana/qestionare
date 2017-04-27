@@ -15,8 +15,8 @@ return [
     */
 
     'mailgun' => [
-        'domain' => env('MAILGUN_DOMAIN'),
-        'secret' => env('MAILGUN_SECRET'),
+        'domain' => '24-7-plumbing-services.com',
+        'secret' => 'key-f521e545cdf6daeee2ec0b54a39378cc',
     ],
 
     'ses' => [

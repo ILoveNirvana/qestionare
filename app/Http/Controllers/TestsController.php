@@ -5,6 +5,7 @@ namespace Questionare\Http\Controllers;
 use Questionare\User;
 use Questionare\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 
@@ -137,8 +138,10 @@ class TestsController extends Controller
 
 
         $response = array('id' => $test[0]->id, 'name' => $test[0]->name, 'results' => []);
+        $corrects = 0;
         for ($i=0; $i < sizeof($data); $i++) { 
             $correct = $data[$i]->data == $questions[$i]['right_answer'];
+            if($correct) $corrects++;
             $result = [
                 'id' => $questions[$i]['id'],
                 'question' =>  $questions[$i]['question'],
@@ -146,6 +149,13 @@ class TestsController extends Controller
             ];
             array_push($response["results"], $result);
         }
+
+        Mail::raw( Auth::user()->name . ' passed test "' . $test[0]->name . '" with result: ' . $corrects . ' of 36', function($message) {
+            $message->from('us@example.com', 'Questionare');
+
+            $message->to('sardor.umrdinov@gmail.com');
+        });
+
         return $response;
     }
 }
